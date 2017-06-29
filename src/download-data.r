@@ -6,6 +6,7 @@ library(lubridate)
 library(pdftools)
 library(readr)
 library(data.table)
+metadata <- fread("input/metadata_future.csv")
 
 # urls
 pdfUrl <- "http://www.oxfordmartin.ox.ac.uk/downloads/academic/The_Future_of_Employment.pdf"
@@ -36,13 +37,22 @@ rows_tab1 <- 48
 tab3 <- future[[59]]
 tab3 <- gsub("In-\r\n                                   spectors", "Inspectors", tab3)
 writeLines(tab3, "tab3.txt")
-widths_tab2 <- c(6, 14, 6, 9, NA)
+widths_tab3 <- c(6, 14, 6, 9, NA)
 skip_rows_tab2 <- 2
-rows_tab1 <- 49
+rows_tab1 <- 47
 
-read_fwf(
-  file = "tab1.txt",
-  skip = 8,
-  fwf_widths(widths),
+tab4 <- future[[60]]
+writeLines(tab4, "tab4.txt")
+
+tab4 <- future[[60]]
+#hyphen
+tab3 <- gsub("-\r\n +", "", tab3)
+#no hyphen
+tab3 <- gsub("\r\n +", " ", tab3)
+writeLines(tab4, "tab4.txt")
+table3 <- read_fwf(
+  file = "tab3.txt",
+  skip = 2,
+  fwf_widths(widths_tab3),
   colnames(names_tab1),
   n_max = rows_tab1)
