@@ -6,15 +6,29 @@ library(lubridate)
 library(pdftools)
 library(readr)
 library(data.table)
-metadata <- fread("input/metadata_future.csv")
+library(readxl)
+metadata_download <- fread("input/metadata_download.csv")
+metadata_pdf <- fread("input/metadata_pdf.csv")
+metadata_xls <- fread("input/metadata_xls.csv")
 
-# urls
-pdfUrl <- "http://www.oxfordmartin.ox.ac.uk/downloads/academic/The_Future_of_Employment.pdf"
+####################
+## download files ##
+####################
 
-# download input files
-if (!file.exists("input/future-employment.pdf")) {
-download.file(pdfUrl, destfile = "input/future-employment.pdf", mode = "wb")
+# requires a metadata file with 2 columns: 'file' and 'url'
+download_files <- function(x) {
+    for (i in 1:nrow(x)) { 
+        cat("\n\n===== Processing file: ", x[i,file], "\n")
+        if (!file.exists(sprintf("input/%s", x[i,file]))) {
+            cat("\n Downloading ", x[i,file])
+            download.file(x[i,url],
+                  destfile = sprintf("input/%s", x[i,file]),
+                  mode = "wb")
+        } else cat("\ninput", x[i,file], " already downloaded \n")
+    }
 }
+
+download_files(metadata_download)
 
 if (!file.exists("input/future_jobs.rdata")) {
 
@@ -44,6 +58,7 @@ for (i  in page_nos) {
     dat$page <- i
     datalist[[i]] <- dat
     unlink(sprintf("%s.txt", metadata[page == i, table]))
+    dat <- NULL
 }
 
 df <- data.table::rbindlist(datalist)
