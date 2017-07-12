@@ -1,10 +1,10 @@
 #########################################
-## Functions to download and read data ##
+## Functions to download and import data ##
 #########################################
 
-####################
-## download files ##
-####################
+#################################
+## download and load functions ##
+#################################
 
 # requires a metadata file with 2 columns: 'file' and 'url'
 download_files <- function(x) {
@@ -20,26 +20,26 @@ download_files <- function(x) {
 }
 
 ################
-## read files ##
+## import files ##
 ################
 
 # requires download, pdf and xls metadata files
-read_files <- function(download_meta, pdf_meta, xls_meta){
+import_files <- function(download_meta, pdf_meta, xls_meta){
     for (i in 1:nrow(download_meta)) {
         if (download_meta[i,file_type == "excel"]) {
-            read_xls_files(xls_meta[file == download_meta[i,file],])
+            import_xls_files(xls_meta[file == download_meta[i,file],])
         }
         if (download_meta[i,file_type == "pdf"]) {
             
-            read_pdf_files(pdf_meta[file == download_meta[i,file],])
+            import_pdf_files(pdf_meta[file == download_meta[i,file],])
         }
     }
 }
 
 # takes (x) a data.table of metadata for excel files with a particular schema
-read_xls_files <- function(x) {
-    cat("\n\n===== Reading file: ", x[,file], "\n")
-    if (!file.exists(sprintf("input/%s", gsub("\\.xlsx?$", "\\.RDS", x[,file])))) {
+import_xls_files <- function(x) {
+    cat("\n\n===== Importing file: ", x[,file], "\n")
+    if (!file.exists(sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))) {
         df <- read_excel(
             path = sprintf("input/raw/%s", x[,file]),
             sheet = x[,sheet],
@@ -50,15 +50,18 @@ read_xls_files <- function(x) {
                           x[,head4],
                           x[,head5])
             )
-        saveRDS(
-            assign(gsub("\\.xlsx?$", "_data", x[,file]), df),
-            file = sprintf("input/%s", gsub("\\.xlsx?$", "\\.RDS", x[,file])))
-    } else cat(gsub("\\.xlsx?$", "\\.RDS", x[,file]), "already exists \n")
+        filename <- gsub("\\.xlsx?$", "", x[,file])
+        assign(paste(filename), value = df)
+        save(list = filename,
+            file = sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))
+        rm(df, filename)
+        cat("\n\nSuccess!! file: ", x[,file], " imported \n")
+    } else cat(gsub("\\.xlsx?$", "\\.rdata", x[,file]), "already imported \n")
 }
     
-read_pdf_files <- function(x) {
-    cat("\n\n===== Reading file: ", x[1,file], "\n")
-    if (!file.exists(sprintf("input/%s", gsub("\\.pdf?$", "\\.RDS", x[1,file])))) {
+import_pdf_files <- function(x) {
+    cat("\n\n===== Importing file: ", x[1,file], "\n")
+    if (!file.exists(sprintf("input/%s", gsub("\\.pdf?$", "\\.rdata", x[1,file])))) {
         future <- pdf_text(sprintf("input/raw/%s", x[1,file]))
         page_nos <- as.numeric(min(x[,page]):max(x[,page]))
         datalist <- list()
@@ -94,8 +97,22 @@ read_pdf_files <- function(x) {
         df <- data.table::rbindlist(datalist)
         # remove page numbers
         df[, occupation := gsub(" \\d{2}", "", occupation)]
-        saveRDS(
-            assign(gsub("\\.pdf?$", "_data", x[1,file]), df),
-            file = sprintf("input/%s", gsub("\\.pdf", "\\.RDS", x[1,file])))
-    } else cat(gsub("\\.pdf?$", "\\.RDS", x[1,file]), "already exists \n")
+        filename <- gsub("\\.pdf?$", "_data", x[1,file])
+        assign(paste(filename), df)
+        save(list = filename,
+            file = sprintf("input/%s", gsub("\\.pdf", "\\.rdata", x[1,file])))
+        rm(df,filename)
+        cat("\n\nSuccess!! file: ", x[1,file], " imported \n")
+    } else cat(gsub("\\.pdf$", "\\.rdata", x[1,file]), "already imported \n")
+}
+
+read_data_files <- function(filetype, directory) {
+    file_list <- list.files(path = directory,
+                            pattern = sprintf("*\\.%s", filetype),
+                            full.names = TRUE)
+    for (i in 1:length(file_list)) {
+        cat("Loading file:", file_list[i])
+        load(file_list[i], .GlobalEnv)
+        cat("done")
+    }
 }

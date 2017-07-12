@@ -17,9 +17,12 @@ metadata_xls <- fread("input/metadata/metadata_xls.csv")
 # download files if they don't exist
 download_files(metadata_download)
 
-# read in data if they haven't been
-read_files(metadata_download, metadata_pdf, metadata_xls)
+# import data
+import_files(metadata_download, metadata_pdf, metadata_xls)
+
+# read datafiles
+read_data_files(filetype = "rdata", directory = "input")
 
 ## load and join tables
-#list.files("input/")[grepl(".*\\.rdata$",list.files("input/"))]
+
 #correlation between SOC code and census data?
