@@ -39,7 +39,7 @@ read_files <- function(download_meta, pdf_meta, xls_meta){
 # takes (x) a data.table of metadata for excel files with a particular schema
 read_xls_files <- function(x) {
     cat("\n\n===== Reading file: ", x[,file], "\n")
-    if (!file.exists(sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))) {
+    if (!file.exists(sprintf("input/%s", gsub("\\.xlsx?$", "\\.RDS", x[,file])))) {
         df <- read_excel(
             path = sprintf("input/raw/%s", x[,file]),
             sheet = x[,sheet],
@@ -50,13 +50,15 @@ read_xls_files <- function(x) {
                           x[,head4],
                           x[,head5])
             )
-        save(df, file = sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))
-    } else cat(gsub("\\.xlsx?$", "\\.rdata", x[,file]), "already exists \n")
+        saveRDS(
+            assign(gsub("\\.xlsx?$", "_data", x[,file]), df),
+            file = sprintf("input/%s", gsub("\\.xlsx?$", "\\.RDS", x[,file])))
+    } else cat(gsub("\\.xlsx?$", "\\.RDS", x[,file]), "already exists \n")
 }
     
 read_pdf_files <- function(x) {
     cat("\n\n===== Reading file: ", x[1,file], "\n")
-    if (!file.exists(sprintf("input/%s", gsub("\\.pdf?$", "\\.rdata", x[1,file])))) {
+    if (!file.exists(sprintf("input/%s", gsub("\\.pdf?$", "\\.RDS", x[1,file])))) {
         future <- pdf_text(sprintf("input/raw/%s", x[1,file]))
         page_nos <- as.numeric(min(x[,page]):max(x[,page]))
         datalist <- list()
@@ -92,6 +94,8 @@ read_pdf_files <- function(x) {
         df <- data.table::rbindlist(datalist)
         # remove page numbers
         df[, occupation := gsub(" \\d{2}", "", occupation)]
-        save(df, file = "input/future_employment.rdata")
-    } else cat(gsub("\\.pdf?$", "\\.rdata", x[1,file]), "already exists \n")
+        saveRDS(
+            assign(gsub("\\.pdf?$", "_data", x[1,file]), df),
+            file = sprintf("input/%s", gsub("\\.pdf", "\\.RDS", x[1,file])))
+    } else cat(gsub("\\.pdf?$", "\\.RDS", x[1,file]), "already exists \n")
 }
