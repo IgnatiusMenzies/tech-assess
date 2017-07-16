@@ -19,10 +19,3 @@ download_files(metadata_download)
 
 # import data
 import_files(metadata_download, metadata_pdf, metadata_xls)
-
-# read datafiles
-read_data_files(filetype = "rdata", directory = "input")
-
-## load and join tables
-
-#correlation between SOC code and census data?

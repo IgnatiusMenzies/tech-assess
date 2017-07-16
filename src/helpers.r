@@ -86,7 +86,7 @@ import_pdf_files <- function(x) {
                             col_names = c("rank", 
                                          "probability", 
                                          "label", 
-                                         "SOC_code", 
+                                         "soc_code",
                                         "occupation")),
                 n_max = as.numeric(x[page == i, num_rows]))
             dat$page <- i
@@ -111,8 +111,8 @@ read_data_files <- function(filetype, directory) {
                             pattern = sprintf("*\\.%s", filetype),
                             full.names = TRUE)
     for (i in 1:length(file_list)) {
-        cat("Loading file:", file_list[i])
+        cat("\n\nLoading file:", file_list[i])
         load(file_list[i], .GlobalEnv)
-        cat("done")
+        cat("\n===== Done\n")
     }
 }
