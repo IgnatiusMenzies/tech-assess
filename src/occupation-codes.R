@@ -46,4 +46,12 @@ summary(isco_soc[,isco_code])
 df <- merge(anzsco_isco, isco_soc, by = "isco_code", all = TRUE, allow.cartesian = TRUE)
 
 df[is.na(anzsco_code)]
+head(df)
 
+
+## Join with future employment data
+
+future <- merge(future_employment_data, df, by = "soc_code", all.x = TRUE)
+head(future)
+tail(future)
+future[is.na(anzsco_code)]
