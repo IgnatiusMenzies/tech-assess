@@ -1,6 +1,12 @@
 #########################################
-## Functions to download and import data ##
+## Functions to download and extract data ##
 #########################################
+
+library(lubridate)
+library(pdftools)
+library(readr)
+library(data.table)
+library(readxl)
 
 #################################
 ## download and load functions ##
@@ -20,25 +26,25 @@ download_files <- function(x) {
 }
 
 ################
-## import files ##
+## extract files ##
 ################
 
 # requires download, pdf and xls metadata files
-import_files <- function(download_meta, pdf_meta, xls_meta){
+extract_files <- function(download_meta, pdf_meta, xls_meta){
     for (i in 1:nrow(download_meta)) {
         if (download_meta[i,file_type == "excel"]) {
-            import_xls_files(xls_meta[file == download_meta[i,file],])
+            extract_xls_files(xls_meta[file == download_meta[i,file],])
         }
         if (download_meta[i,file_type == "pdf"]) {
             
-            import_pdf_files(pdf_meta[file == download_meta[i,file],])
+            extract_pdf_files(pdf_meta[file == download_meta[i,file],])
         }
     }
 }
 
 # takes (x) a data.table of metadata for excel files with a particular schema
-import_xls_files <- function(x) {
-    cat("\n\n===== Importing file: ", x[,file], "\n")
+extract_xls_files <- function(x) {
+    cat("\n\n===== Extracting file: ", x[,file], "\n")
     if (!file.exists(sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))) {
         df <- read_excel(
             path = sprintf("input/raw/%s", x[,file]),
@@ -46,21 +52,25 @@ import_xls_files <- function(x) {
             range = x[,range],
             col_names = c(x[,head1],
                           x[,head2],
-                          x[,head3],
-                          x[,head4],
-                          x[,head5])
-            )
+                          if (is.na(x[,head3])){NULL} else (x[,head3]),
+                          if (is.na(x[,head4])){NULL} else (x[,head4]),
+                          if (is.na(x[,head5])){NULL} else (x[,head5])),
+            col_types = c(x[,type1],
+                          x[,type2],
+                          if (is.na(x[,type3])){NULL} else (x[,type3]),
+                          if (is.na(x[,type4])){NULL} else (x[,type4]),
+                          if (is.na(x[,type5])){NULL} else (x[,type5])))
         filename <- gsub("\\.xlsx?$", "", x[,file])
         assign(paste(filename), value = df)
         save(list = filename,
             file = sprintf("input/%s", gsub("\\.xlsx?$", "\\.rdata", x[,file])))
         rm(df, filename)
-        cat("\n\nSuccess!! file: ", x[,file], " imported \n")
-    } else cat(gsub("\\.xlsx?$", "\\.rdata", x[,file]), "already imported \n")
+        cat("\n\nSuccess!! file: ", x[,file], " extracted \n")
+    } else cat(gsub("\\.xlsx?$", "\\.rdata", x[,file]), "already extracted \n")
 }
     
-import_pdf_files <- function(x) {
-    cat("\n\n===== Importing file: ", x[1,file], "\n")
+extract_pdf_files <- function(x) {
+    cat("\n\n===== Extracting file: ", x[1,file], "\n")
     if (!file.exists(sprintf("input/%s", gsub("\\.pdf?$", "\\.rdata", x[1,file])))) {
         future <- pdf_text(sprintf("input/raw/%s", x[1,file]))
         page_nos <- as.numeric(min(x[,page]):max(x[,page]))
@@ -102,8 +112,8 @@ import_pdf_files <- function(x) {
         save(list = filename,
             file = sprintf("input/%s", gsub("\\.pdf", "\\.rdata", x[1,file])))
         rm(df,filename)
-        cat("\n\nSuccess!! file: ", x[1,file], " imported \n")
-    } else cat(gsub("\\.pdf$", "\\.rdata", x[1,file]), "already imported \n")
+        cat("\n\nSuccess!! file: ", x[1,file], " extracted \n")
+    } else cat(gsub("\\.pdf$", "\\.rdata", x[1,file]), "already extracted \n")
 }
 
 read_data_files <- function(filetype, directory) {

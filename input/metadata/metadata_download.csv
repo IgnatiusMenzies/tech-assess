@@ -2,3 +2,5 @@ file,url,file_type
 isco_soc.xls,https://www.bls.gov/soc/ISCO_SOC_Crosswalk.xls,excel
 anzsco_isco.xls,"http://www.abs.gov.au/ausstats/subscriber.nsf/log?openagent&1220.0%20ANZSCO%20Correspondence%20to%20ISCO-08%20v2.xls&1220.0&Data%20Cubes&A95F7BD105E1C5ABCA257BF90010E155&0&2013,%20Version%201.2&04.10.2013&Latest",excel
 future_employment.pdf,http://www.oxfordmartin.ox.ac.uk/downloads/academic/The_Future_of_Employment.pdf,pdf
+occupation_2013.xls,http://archive.stats.govt.nz/~/media/Statistics/Census/2013%20Census/data-tables/totals-by-topic/totals-by-topic-tables.xls,excel
+occupation_2006.xls,http://archive.stats.govt.nz/~/media/Statistics/Census/2006-reports/Classification-Count-Tables/People/occupation.xls,excel

@@ -1,20 +1,17 @@
-##########################
-## load and join tables ##
-##########################
+#################
+## tidy tables ##
+#################
 
-library(data.table)
-library(dbplyr)
-library(dplyr)
-source('src/helpers.r')
-
-# read datafiles
-read_data_files(filetype = "rdata", directory = "input")
+# coerce to data.table
 
 anzsco_isco <- as.data.table(anzsco_isco)
 future_employment_data <- as.data.table(future_employment_data)
 isco_soc <- as.data.table(isco_soc)
+occupation_2006 <- as.data.table(occupation_2006)
+occupation_2013 <- as.data.table(occupation_2013)
 
-#tidy anzco 
+# tidy crosswork table
+
 # higher-lever categories are interspersed throughout data. 
 #it could be useful in future to get the titles and row numbers for these
 # occupation categories are stored with a number. this number forms the first digit of the 6 digit anzsco code.
@@ -39,19 +36,23 @@ for (i in as.numeric(min(anzsco_level[,anzsco_category_num])):as.numeric(max(anz
 anzsco_isco <- merge(anzsco_isco, anzsco_level, by = "anzsco_category_num", all.x = TRUE)
 names(anzsco_isco)
 names(isco_soc)
-summary(anzsco_isco[,isco_code])
-summary(isco_soc[,isco_code])
 
+crosswalk <- merge(anzsco_isco, isco_soc, by = "isco_code", all = TRUE, allow.cartesian = TRUE)
 
-df <- merge(anzsco_isco, isco_soc, by = "isco_code", all = TRUE, allow.cartesian = TRUE)
+crosswalk[,anzsco_code := as.numeric(anzsco_code)]
+head(crosswalk)
 
-df[is.na(anzsco_code)]
-head(df)
+## census data is already pretty tidy
+census <- merge(occupation_2006, occupation_2013, by = "anzsco_code", all = TRUE, allow.cartesian = TRUE)
 
+census[is.na(anzsco_title.x),]
+census[is.na(anzsco_title.y),]
+census[,`:=` (anzsco_title_2006 = anzsco_title.x,
+              anzsco_title_2013 = anzsco_title.y]
+census[,`:=` (anzsco_title.x = NULL,
+              anzsco_title.y = NULL)]
 
-## Join with future employment data
-
-future <- merge(future_employment_data, df, by = "soc_code", all.x = TRUE)
-head(future)
-tail(future)
-future[is.na(anzsco_code)]
+## future employment data is already pretty tidy
+summary(future_employment_data)
+head(future_employment_data)
+tail(future_employment_data)
