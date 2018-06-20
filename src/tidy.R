@@ -51,6 +51,7 @@ census[,`:=` (anzsco_title_2006 = anzsco_title.x,
               anzsco_title_2013 = anzsco_title.y]
 census[,`:=` (anzsco_title.x = NULL,
               anzsco_title.y = NULL)]
+census[, census_diff := count_2013 - count_2006]
 
 ## future employment data is already pretty tidy
 summary(future_employment_data)
