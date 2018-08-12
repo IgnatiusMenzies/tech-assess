@@ -1,2 +1,2 @@
 # tech-assess
-Assessing the impact of AI and ML on New Zealand
+Assessing the potential impact of AI and ML on New Zealand
