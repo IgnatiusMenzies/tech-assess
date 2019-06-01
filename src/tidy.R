@@ -45,13 +45,22 @@ head(crosswalk)
 ## census data is already pretty tidy
 census <- merge(occupation_2006, occupation_2013, by = "anzsco_code", all = TRUE, allow.cartesian = TRUE)
 
+census <- census[!is.na(anzsco_code)]
 census[is.na(anzsco_title.x),]
 census[is.na(anzsco_title.y),]
 census[,`:=` (anzsco_title_2006 = anzsco_title.x,
               anzsco_title_2013 = anzsco_title.y)]
 census[,`:=` (anzsco_title.x = NULL,
               anzsco_title.y = NULL)]
-census[, census_prop_2013 := count_2013/sum()]
+census[is.na(count_2013)]
+
+census[,`:=` (total_2006 = sum(count_2006, na.rm = TRUE),
+              total_2013 = sum(count_2013, na.rm = TRUE))]
+
+census[, `:=` (census_prop_2006 = count_2006/total_2006*100,
+               census_prop_2013 = count_2013/total_2013*100)]
+       
+census[, prop_difference := (census_prop_2013 - census_prop_2006)]
 
 ## future employment data is already pretty tidy
 summary(future_employment_data)

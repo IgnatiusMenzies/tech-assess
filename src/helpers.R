@@ -7,6 +7,8 @@ library(pdftools)
 library(readr)
 library(data.table)
 library(readxl)
+#load package for reduced major axis regression
+library(smatr)
 
 #################################
 ## download and load functions ##

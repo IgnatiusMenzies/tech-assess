@@ -2,7 +2,7 @@
 ## Download and read files ##
 #############################
 
-source("src/helpers.r")
+source("src/helpers.R")
 
 #read metadata files 
 metadata_download <- fread("input/metadata/metadata_download.csv")
