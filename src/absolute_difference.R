@@ -3,7 +3,7 @@
 ################
 
 ## Join crosswalk with future employment data
-thin_census <- census[,.(anzsco_code,prop_difference)]
+thin_census <- census[!is.na(count_2006),.(anzsco_code,absolute_difference)]
 
 tmp <- merge(future_employment_data, crosswalk, by = "soc_code", all.x = TRUE)
 head(tmp)
@@ -17,8 +17,8 @@ for (i in 1:length(unique(tmp$anzsco_code))) {
     df <- NULL
 }
 
-B <- 10000  # No.of bootstrap samples
-boot.slopes <- rep(NA,B)
+B <- 2000  # No.of bootstrap samples
+boot_slopes <- list()
 for (i in 1:B){
     sample_prob <- list()
     for (x in 1:length(job_prob)) {
@@ -36,13 +36,29 @@ for (i in 1:B){
     ## join  with census data
     census_prob <- merge(sample_prob, thin_census, by = "anzsco_code", all.x = TRUE)
 
-    PD <- census_prob$prop_difference
-    P <- census_prob$probability
-    this.fit <- line.cis(PD,P, alpha = 0.05, method = "SMA")
-    boot.slopes[i] <- this.fit[2,1]
+    spearman_test <- cor.test( ~ absolute_difference + probability,
+              data = census_prob,
+              method = "spearman",
+              continuity = FALSE,
+              conf.level = 0.95)
+    
+    df <- data.table()
+    df$p_value <- spearman_test[3]
+    df$rho <- spearman_test[4]
+    boot_slopes[[i]] <- df
     print(i)
 }
+boot_slopes <- rbindlist(boot_slopes)
 
-mean(boot.slopes)
-sd(boot.slopes)
-summary(boot.slopes)
+mean(boot_slopes$rho)
+sd(boot_slopes$rho)
+summary(boot_slopes)
+
+plot(census_prob$probability, census_prob$absolute_difference)
+
+# major axis regression
+# POOL()
+# LI <- log(Island)
+# LM <- log(Mainland)
+# this.fit <- line.cis(LI,LM, alpha = 0.05,         method = "SMA")
+# boot.slopes[i] <- this.fit[2,1]}
