@@ -1,5 +1,6 @@
 file,sheet,range,head1,head2,head3,head4,head5,type1,type2,type3,type4,type5
 isco_soc.xls,2010 SOC to ISCO-08,A8:E1132,soc_code,soc_title,partial_s_i,isco_code,isco_title,guess,guess,guess,guess,guess
 anzsco_isco.xls,ANZSCO Version 1.2 to ISCO-08,A8:E1303,anzsco_code,anzsco_title,isco_code,partial_a_i,isco_title,guess,guess,guess,guess,guess
-occupation_2013.xls,Table 23,A8:C1033,anzsco_code,anzsco_title,count_2013, NA,NA,numeric,text,numeric, NA,NA
-occupation_2006.xls,Table 26,A8:C1008,anzsco_code,anzsco_title,count_2006,NA,NA,numeric,text,numeric,NA,NA
+occupation_2013.xls,Table 23,A8:C1033,anzsco_code,anzsco_title_2013,count_2013, NA,NA,numeric,text,numeric, NA,NA
+occupation_2006.xls,Table 26,A8:C1008,anzsco_code,anzsco_title_2006,count_2006,NA,NA,numeric,text,numeric,NA,NA
+occupation_2018.xlsx,Table 20,A8:C1030,anzsco_code,anzsco_title_2018,count_2018,NA,NA,numeric,text,numeric,NA,NA
