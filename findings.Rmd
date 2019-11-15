@@ -1,0 +1,33 @@
+---
+title: "Technology Assessment"
+author: "Ignatius Menzies"
+date: "5 June 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source('src/relative_difference.R')
+#source('src/absolute_difference.R')
+```
+
+```{r}
+mean(boot_slopes_06_13$rho)
+sd(boot_slopes_06_13$rho)
+summary(boot_slopes_06_13)
+
+# plot(census_prob$probability, census_prob$perc_difference_06_13)
+
+# census_prob[order(-perc_difference_06_13),]
+
+# outlier_values <- boxplot.stats(census_prob$perc_difference_06_13)$out  # outlier values.
+# boxplot(census_prob$perc_difference_06_13, main="Percent difference between censuses", boxwex=0.1)
+# mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
+
+mean(boot_slopes_13_18$rho)
+sd(boot_slopes_13_18$rho)
+summary(boot_slopes_13_18)
+
+
+
+```

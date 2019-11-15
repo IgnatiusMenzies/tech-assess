@@ -3,7 +3,7 @@
 ################
 
 ## Join crosswalk with future employment data
-thin_census <- census[!is.na(count_2006),.(anzsco_code,absolute_difference)]
+thin_census <- census[,.(anzsco_code,absolute_difference_06_13,absolute_difference_13_18)]
 
 tmp <- merge(future_employment_data, crosswalk, by = "soc_code", all.x = TRUE)
 head(tmp)
@@ -18,7 +18,7 @@ for (i in 1:length(unique(tmp$anzsco_code))) {
 }
 
 B <- 2000  # No.of bootstrap samples
-boot_slopes <- list()
+boot_slopes_06_13 <- list()
 for (i in 1:B){
     sample_prob <- list()
     for (x in 1:length(job_prob)) {
@@ -36,7 +36,7 @@ for (i in 1:B){
     ## join  with census data
     census_prob <- merge(sample_prob, thin_census, by = "anzsco_code", all.x = TRUE)
 
-    spearman_test <- cor.test( ~ absolute_difference + probability,
+    spearman_test <- cor.test( ~ absolute_difference_06_13 + probability,
               data = census_prob,
               method = "spearman",
               continuity = FALSE,
@@ -48,7 +48,39 @@ for (i in 1:B){
     boot_slopes[[i]] <- df
     print(i)
 }
-boot_slopes <- rbindlist(boot_slopes)
+boot_slopes_06_13 <- rbindlist(boot_slopes_06_13)
+
+boot_slopes_13_18 <- list()
+for (i in 1:B){
+    sample_prob <- list()
+    for (x in 1:length(job_prob)) {
+        prob <- sample(job_prob[[x]]$probability, 1)
+        code <- job_prob[[x]]$anzsco_code[1]
+        
+        df <- data.table()
+        df$probability <- prob
+        df$anzsco_code <- code
+        sample_prob[[x]] <- df
+        df <- NULL
+    }
+    sample_prob <- rbindlist(sample_prob)
+    
+    ## join  with census data
+    census_prob <- merge(sample_prob, thin_census, by = "anzsco_code", all.x = TRUE)
+    
+    spearman_test <- cor.test( ~ absolute_difference_13_18 + probability,
+                               data = census_prob,
+                               method = "spearman",
+                               continuity = FALSE,
+                               conf.level = 0.95)
+    
+    df <- data.table()
+    df$p_value <- spearman_test[3]
+    df$rho <- spearman_test[4]
+    boot_slopes[[i]] <- df
+    print(i)
+}
+boot_slopes_13_18 <- rbindlist(boot_slopes_13_18)
 
 mean(boot_slopes$rho)
 sd(boot_slopes$rho)

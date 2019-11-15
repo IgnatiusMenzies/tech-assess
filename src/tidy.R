@@ -2,17 +2,19 @@
 ## tidy tables ##
 #################
 
-# coerce to data.table
+source("src/download_and_load.R")
 
+# coerce to data.table
 anzsco_isco <- as.data.table(anzsco_isco)
 future_employment_data <- as.data.table(future_employment_data)
 isco_soc <- as.data.table(isco_soc)
 occupation_2006 <- as.data.table(occupation_2006)
 occupation_2013 <- as.data.table(occupation_2013)
+occupation_2018 <- as.data.table(occupation_2018)
 
 # tidy crosswork table
 
-# higher-lever categories are interspersed throughout data. 
+# higher-level categories are interspersed throughout data. 
 #it could be useful in future to get the titles and row numbers for these
 # occupation categories are stored with a number. this number forms the first digit of the 6 digit anzsco code.
 
@@ -34,38 +36,28 @@ for (i in as.numeric(min(anzsco_level[,anzsco_category_num])):as.numeric(max(anz
 }
                            
 anzsco_isco <- merge(anzsco_isco, anzsco_level, by = "anzsco_category_num", all.x = TRUE)
-names(anzsco_isco)
-names(isco_soc)
-
 crosswalk <- merge(anzsco_isco, isco_soc, by = "isco_code", all = TRUE, allow.cartesian = TRUE)
-
 crosswalk[,anzsco_code := as.numeric(anzsco_code)]
-head(crosswalk)
 
-## census data is already pretty tidy
+## census data
 census <- merge(occupation_2006, occupation_2013, by = "anzsco_code", all = TRUE, allow.cartesian = TRUE)
+census <- merge(census, occupation_2018, by = "anzsco_code", all = TRUE, allow.cartesian = TRUE)
+
 census[is.na(anzsco_code)]
 
 census <- census[!is.na(anzsco_code)]
-census[is.na(anzsco_title.x),]
-census[is.na(anzsco_title.y),]
-census[,`:=` (anzsco_title_2006 = anzsco_title.x,
-              anzsco_title_2013 = anzsco_title.y)]
-census[,`:=` (anzsco_title.x = NULL,
-              anzsco_title.y = NULL)]
 census[is.na(count_2013)]
 
-census[, absolute_difference := (count_2013 - count_2006)]
+census[, absolute_difference_06_13 := (count_2013 - count_2006)]
+census[, absolute_difference_13_18 := (count_2018 - count_2013)]
  
 census[,`:=` (total_2006 = sum(count_2006, na.rm = TRUE),
-              total_2013 = sum(count_2013, na.rm = TRUE))]
+              total_2013 = sum(count_2013, na.rm = TRUE),
+              total_2018 = sum(count_2018, na.rm = TRUE))]
 
 census[, `:=` (census_prop_2006 = count_2006/total_2006*100,
-               census_prop_2013 = count_2013/total_2013*100)]
+               census_prop_2013 = count_2013/total_2013*100,
+               census_prop_2018 = count_2018/total_2018*100)]
 
-census[, perc_difference := (census_prop_2013 - census_prop_2006)]
-
-## future employment data is already pretty tidy
-summary(future_employment_data)
-head(future_employment_data)
-tail(future_employment_data)
+census[, perc_difference_06_13 := (census_prop_2013 - census_prop_2006)]
+census[, perc_difference_13_18 := (census_prop_2018 - census_prop_2013)]
