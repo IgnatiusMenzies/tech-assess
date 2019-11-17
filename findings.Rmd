@@ -28,6 +28,32 @@ mean(boot_slopes_13_18$rho)
 sd(boot_slopes_13_18$rho)
 summary(boot_slopes_13_18)
 
-
-
 ```
+
+> mean(boot_slopes_06_13$rho)
+[1] -0.253688
+> mean(boot_slopes_13_18$rho)
+[1] -0.08786565
+
+
+> sd(boot_slopes_06_13$rho)
+[1] 0.01707973
+> sd(boot_slopes_13_18$rho)
+[1] 0.0169028
+
+> summary(boot_slopes_06_13)
+    p_value               rho         
+ Min.   :0.000e+00   Min.   :-0.3036  
+ 1st Qu.:0.000e+00   1st Qu.:-0.2652  
+ Median :1.000e-14   Median :-0.2532  
+ Mean   :4.814e-11   Mean   :-0.2537  
+ 3rd Qu.:1.600e-13   3rd Qu.:-0.2420  
+ Max.   :8.855e-08   Max.   :-0.1767 
+> summary(boot_slopes_13_18)
+    p_value               rho          
+ Min.   :0.0000078   Min.   :-0.14655  
+ 1st Qu.:0.0025279   1st Qu.:-0.09929  
+ Median :0.0078174   Median :-0.08750  
+ Mean   :0.0169185   Mean   :-0.08787  
+ 3rd Qu.:0.0210387   3rd Qu.:-0.07594  
+ Max.   :0.3657425   Max.   :-0.02981  
