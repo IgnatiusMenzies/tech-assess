@@ -9,6 +9,7 @@ library(data.table)
 library(readxl)
 #load package for reduced major axis regression
 library(smatr)
+library(robustbase)
 
 #################################
 ## download and load functions ##

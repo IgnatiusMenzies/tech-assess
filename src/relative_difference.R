@@ -38,16 +38,15 @@ for (i in 1:B){
     ## join  with census data
     census_prob <- merge(sample_prob, thin_census, by = "anzsco_code", all.x = TRUE)
 
-    spearman_test <- cor.test( ~ perc_difference_06_13 + probability,
-              data = census_prob,
-              method = "spearman",
-              continuity = FALSE,
-              conf.level = 0.95,
-              exact = FALSE)
+    model <- lmrob(perc_difference_06_13 ~ probability,
+              data = census_prob)
     
     df <- data.table()
-    df$p_value <- spearman_test[3]
-    df$rho <- spearman_test[4]
+    df$p_value <- summary(model)$coefficients[2,4]
+    df$adj_r_square <- summary(model)$adj.r.squared
+    df$slope <- model$coefficient["probability"]
+    df$intercept <- model$coefficient["(Intercept)"]
+    
     boot_slopes_06_13[[i]] <- df
     print(i)
 }
@@ -71,16 +70,15 @@ for (i in 1:B){
     ## join  with census data
     census_prob <- merge(sample_prob, thin_census, by = "anzsco_code", all.x = TRUE)
     
-    spearman_test <- cor.test( ~ perc_difference_13_18 + probability,
-                               data = census_prob,
-                               method = "spearman",
-                               continuity = FALSE,
-                               conf.level = 0.95,
-                               exact = FALSE)
+    model <- lmrob(perc_difference_13_18 ~ probability,
+                data = census_prob)
     
     df <- data.table()
-    df$p_value <- spearman_test[3]
-    df$rho <- spearman_test[4]
+    df$p_value <- summary(model)$coefficients[2,4]
+    df$adj_r_square <- summary(model)$adj.r.squared
+    df$slope <- model$coefficient["probability"]
+    df$intercept <- model$coefficient["(Intercept)"]
+    
     boot_slopes_13_18[[i]] <- df
     print(i)
 }

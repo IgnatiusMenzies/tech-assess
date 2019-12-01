@@ -8,13 +8,17 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 source('src/relative_difference.R')
-#source('src/absolute_difference.R')
 ```
 
 ```{r}
-mean(boot_slopes_06_13$rho)
-sd(boot_slopes_06_13$rho)
+mean(boot_slopes_06_13$p_value)
+mean(boot_slopes_06_13$adj_r_square)
+mean(boot_slopes_06_13$slope)
+mean(boot_slopes_06_13$intercept)
+
 summary(boot_slopes_06_13)
+
+
 
 # plot(census_prob$probability, census_prob$perc_difference_06_13)
 
@@ -24,8 +28,11 @@ summary(boot_slopes_06_13)
 # boxplot(census_prob$perc_difference_06_13, main="Percent difference between censuses", boxwex=0.1)
 # mtext(paste("Outliers: ", paste(outlier_values, collapse=", ")), cex=0.6)
 
-mean(boot_slopes_13_18$rho)
-sd(boot_slopes_13_18$rho)
+mean(boot_slopes_13_18$p_value)
+mean(boot_slopes_13_18$adj_r_square)
+mean(boot_slopes_13_18$slope)
+mean(boot_slopes_13_18$intercept)
+
 summary(boot_slopes_13_18)
 
 ```
@@ -57,3 +64,7 @@ summary(boot_slopes_13_18)
  Mean   :0.0169185   Mean   :-0.08787  
  3rd Qu.:0.0210387   3rd Qu.:-0.07594  
  Max.   :0.3657425   Max.   :-0.02981  
+ 
+ 2001 and 1996 census use different occupation classification (NZSCO99), plus 1996 data tables download links point to the wrong file :( 
+ 
+ 
